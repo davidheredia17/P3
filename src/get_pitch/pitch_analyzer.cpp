@@ -3,6 +3,7 @@
 #include <iostream>
 #include <math.h>
 #include "pitch_analyzer.h"
+#include <fstream>
 
 using namespace std;
 
@@ -11,7 +12,22 @@ namespace upc {
   void PitchAnalyzer::autocorrelation(const vector<float> &x, vector<float> &r) const {
 
     for (unsigned int l = 0; l < r.size(); ++l) {
-  		/// \TODO Compute the autocorrelation r[l]
+      /**
+      \DONE Autocorrelación calculada
+      \f[
+      r[l] = \frac{1}{N} \sum_{n=l}^{n=N} x[n] \cdot x[n-l]
+      \f]
+      1. Inicialitzem \f$r[l]\f$ a zero
+      2. Acumulem el producte de \f$x[n]\f$ per \f$x[n-l]\f$ per a \f$l\le n < N\f$
+      3. Dividim el resultat per \f$N\f$
+      */
+      
+      // r[l] = sum (x[n]*x[n-l])
+      r[l] = 0;
+      for(unsigned int n = l; n < x.size(); n++){
+        r[l] += x[n] * x[n-l];
+      }
+      r[l] = r[l] / x.size();
     }
 
     if (r[0] == 0.0F) //to avoid log() and divide zero 
@@ -26,7 +42,18 @@ namespace upc {
 
     switch (win_type) {
     case HAMMING:
-      /// \TODO Implement the Hamming window
+      /**
+      \DONE Finestra de Hamming implementada
+      \f[
+      w[n] = 0.54 - 0.46 \cdot \cos\left(\frac{2\pi n}{N-1}\right)
+      \f]
+      On \f$N\f$ és la longitud de la trama (frameLen).
+      1. Recorrem l'array de la finestra.
+      2. Apliquem la fórmula matemàtica per a cada índex \f$i\f$.
+      */
+      for (unsigned int i = 0; i < frameLen; ++i) {
+        window[i] = 0.54f - 0.46f * cos(2.0f * M_PI * i / (frameLen - 1));
+      }
       break;
     case RECT:
     default:
@@ -47,10 +74,25 @@ namespace upc {
   }
 
   bool PitchAnalyzer::unvoiced(float pot, float r1norm, float rmaxnorm) const {
-    /// \TODO Implement a rule to decide whether the sound is voiced or not.
-    /// * You can use the standard features (pot, r1norm, rmaxnorm),
-    ///   or compute and use other ones.
-    return true;
+    /**
+    \DONE Regla de decisió sonor/sord (unvoiced) implementada
+    Hem implementat una heurística basada en la potència i la periodicitat de la senyal:
+    1. Si la potència (`pot`) és menor a -40 dB, assumim que és soroll de fons o silenci, per tant és sord (`return true`).
+    2. Si el valor màxim secundari de l'autocorrelació normalitzada (`rmaxnorm`) és menor a 0.45, 
+       significa que no hi ha prou periodicitat a la senyal, per tant la classifiquem com a sorda (`return true`).
+    3. Si supera ambdós llindars, la considerem sonora (`return false`).
+    Aquests paràmetres (-40 i 0.45) són empírics i poden requerir optimització.
+    */
+    
+    if (pot < -40.0f) {
+      return true; 
+    }
+    
+    if (rmaxnorm < 0.45f) {
+      return true;
+    }
+
+    return false;
   }
 
   float PitchAnalyzer::compute_pitch(vector<float> & x) const {
@@ -68,13 +110,25 @@ namespace upc {
 
     vector<float>::const_iterator iR = r.begin(), iRMax = iR;
 
-    /// \TODO 
-	/// Find the lag of the maximum value of the autocorrelation away from the origin.<br>
-	/// Choices to set the minimum value of the lag are:
-	///    - The first negative value of the autocorrelation.
-	///    - The lag corresponding to the maximum value of the pitch.
-    ///	   .
-	/// In either case, the lag should not exceed that of the minimum value of the pitch.
+    /**
+    \DONE Cerca del període de pitch (lag de la màxima autocorrelació lluny de l'origen)
+    1. Per evitar detectar el màxim global al lag 0 (energia de la senyal), iniciem 
+       la recerca de `iRMax` a partir de `npitch_min`, que correspon a la freqüència 
+       màxima possible del pitch esperat (típicament 500 Hz).
+    2. Recorrem l'array d'autocorrelació `r` des de `npitch_min` fins a la fi de l'array 
+       (que està limitat per `npitch_max`, la freqüència mínima del pitch).
+    3. Actualitzem `iRMax` cada cop que trobem un valor superior a l'actual emmagatzemat.
+    */
+
+    // Comencem a buscar des de npitch_min
+    iRMax = r.begin() + npitch_min; 
+    
+    // Recorrem el vector des de npitch_min fins el final (npitch_max)
+    for (vector<float>::const_iterator it = r.begin() + npitch_min; it != r.end(); ++it) {
+      if (*it > *iRMax) {
+        iRMax = it; 
+      }
+    }
 
     unsigned int lag = iRMax - r.begin();
 
@@ -83,9 +137,13 @@ namespace upc {
     //You can print these (and other) features, look at them using wavesurfer
     //Based on that, implement a rule for unvoiced
     //change to #if 1 and compile
-#if 0
-    if (r[0] > 0.0F)
+#if 1
+    if (r[0] > 0.0F) {
       cout << pot << '\t' << r[1]/r[0] << '\t' << r[lag]/r[0] << endl;
+    } else {
+      // Imprimim valors molt baixos per representar els silencis absoluts
+      cout << -100.0 << '\t' << 0.0 << '\t' << 0.0 << endl;
+    }
 #endif
     
     if (unvoiced(pot, r[1]/r[0], r[lag]/r[0]))
