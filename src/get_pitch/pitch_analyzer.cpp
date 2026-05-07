@@ -13,7 +13,7 @@ namespace upc {
 
     for (unsigned int l = 0; l < r.size(); ++l) {
       /**
-      \DONE Autocorrelación calculada
+      \DONE Autocorrelació calculada
       \f[
       r[l] = \frac{1}{N} \sum_{n=l}^{n=N} x[n] \cdot x[n-l]
       \f]
@@ -75,22 +75,25 @@ namespace upc {
 
   bool PitchAnalyzer::unvoiced(float pot, float r1norm, float rmaxnorm) const {
     /**
-    \DONE Regla de decisió sonor/sord (unvoiced) implementada
-    Hem implementat una heurística basada en la potència i la periodicitat de la senyal:
-    1. Si la potència (`pot`) és menor a -40 dB, assumim que és soroll de fons o silenci, per tant és sord (`return true`).
-    2. Si el valor màxim secundari de l'autocorrelació normalitzada (`rmaxnorm`) és menor a 0.45, 
+    \DONE Regla de decisió sonor/sord (voiced/unvoiced) implementada
+    \n Hem implementat una heurística basada en la potència i la periodicitat de la senyal:
+    1. Si la potència (`pot`) és menor a -45 dB, assumim que és soroll de fons o silenci, per tant és sord fem `return true`.
+    2. Si el valor màxim secundari de l'autocorrelació normalitzada (`rmaxnorm`) és menor a 0.43, 
        significa que no hi ha prou periodicitat a la senyal, per tant la classifiquem com a sorda (`return true`).
     3. Si supera ambdós llindars, la considerem sonora (`return false`).
-    Aquests paràmetres (-40 i 0.45) són empírics i poden requerir optimització.
+    4. A més, si la potència és bastant baixa (menor a -38 dB) i la periodicitat no és clara (rmaxnorm < 0.55), també la classifiquem com a sorda.
+    Aquests paràmetres -45 dB i 0.43 són empírics i segurament es poden optimitzar encara mes.
     */
     
-    if (pot < -40.0f) {
+    if (pot < -45.0f) {
       return true; 
     }
     
-    if (rmaxnorm < 0.45f) {
+    if (rmaxnorm < 0.43f) {
       return true;
     }
+    // Si la potencia baixa i la periodicitat no es clara sord també
+    if (pot < -38.0f && rmaxnorm < 0.55f) return true;
 
     return false;
   }
@@ -114,7 +117,7 @@ namespace upc {
     \DONE Cerca del període de pitch (lag de la màxima autocorrelació lluny de l'origen)
     1. Per evitar detectar el màxim global al lag 0 (energia de la senyal), iniciem 
        la recerca de `iRMax` a partir de `npitch_min`, que correspon a la freqüència 
-       màxima possible del pitch esperat (típicament 500 Hz).
+       màxima possible del pitch esperat (500 Hz per la veu humana segons la teoria).
     2. Recorrem l'array d'autocorrelació `r` des de `npitch_min` fins a la fi de l'array 
        (que està limitat per `npitch_max`, la freqüència mínima del pitch).
     3. Actualitzem `iRMax` cada cop que trobem un valor superior a l'actual emmagatzemat.
