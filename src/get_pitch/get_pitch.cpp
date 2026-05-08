@@ -46,10 +46,10 @@ int main(int argc, const char *argv[]) {
   /**
   \DONE Modificació de docopt per afegir paràmetres
   Hem afegit diverses opcions a la cadena `USAGE` perquè `docopt` les processi:
-  1. Tipus de finestra (`--window`): Per triar entre una finestre rectangular o Hamming.
-  2. Límits freqüencials (`--min-f0`, `--max-f0`): Per ajustar el rang a on buscar.
-  3. Preprocessament (`--clip`): Llindar per aplicar center clipping.
-  4. Postprocessament (`--median`): Mida de la finestra pel filtre de mediana.
+  -# Tipus de finestra (`--window`): Per triar entre una finestre rectangular o Hamming.
+  -# Límits de freqüència (`--min-f0`, `--max-f0`): Per ajustar el rang a on buscar.
+  -# Preprocessat (`--clip`): Llindar per aplicar center clipping.
+  -# Postprocesst (`--median`): Mida de la finestra pel filtre de mediana.
   Posteriorment, 'parsegem' els valors retornats per docopt i els convertim als tipus que toca.
   */
   std::map<std::string, docopt::value> args = docopt::docopt(USAGE,
@@ -89,10 +89,10 @@ int main(int argc, const char *argv[]) {
   \DONE Preprocessament afegit: Center-Clipping
   El center-clipping ajuda a eliminar l'efecte dels formants i ressaltar la periodicitat fonamental 
   abans de calcular l'autocorrelació.
-  1. Busquem el valor màxim absolut del senyal d'entrada.
-  2. Establim un llindar relatiu a aquest màxim (passat per l'argument `--clip`).
-  3. Totes les mostres per sota d'aquest llindar en valor absolut es posen a zero.
-  4. Restem el llindar a la resta per suavitzar la transició.
+  -# Busquem el valor màxim absolut del senyal d'entrada.
+  -# Establim un llindar relatiu a aquest màxim (passat per l'argument `--clip`).
+  -# Totes les mostres per sota d'aquest llindar en valor absolut es posen a zero.
+  -# Restem el llindar a la resta per suavitzar la transició.
   */
   if (clip_th > 0.0f) {
     float max_val = 0.0f;

@@ -17,9 +17,9 @@ namespace upc {
       \f[
       r[l] = \frac{1}{N} \sum_{n=l}^{n=N} x[n] \cdot x[n-l]
       \f]
-      1. Inicialitzem \f$r[l]\f$ a zero
-      2. Acumulem el producte de \f$x[n]\f$ per \f$x[n-l]\f$ per a \f$l\le n < N\f$
-      3. Dividim el resultat per \f$N\f$
+      -# Inicialitzem \f$r[l]\f$ a zero
+      -# Acumulem el producte de \f$x[n]\f$ per \f$x[n-l]\f$ per a \f$l\le n < N\f$
+      -# Dividim el resultat per \f$N\f$
       */
       
       // r[l] = sum (x[n]*x[n-l])
@@ -48,8 +48,8 @@ namespace upc {
       w[n] = 0.54 - 0.46 \cdot \cos\left(\frac{2\pi n}{N-1}\right)
       \f]
       On \f$N\f$ és la longitud de la trama (frameLen).
-      1. Recorrem l'array de la finestra.
-      2. Apliquem la fórmula matemàtica per a cada índex \f$i\f$.
+      -# Recorrem l'array de la finestra.
+      -# Apliquem la fórmula matemàtica per a cada índex \f$i\f$.
       */
       for (unsigned int i = 0; i < frameLen; ++i) {
         window[i] = 0.54f - 0.46f * cos(2.0f * M_PI * i / (frameLen - 1));
@@ -77,12 +77,12 @@ namespace upc {
     /**
     \DONE Regla de decisió sonor/sord (voiced/unvoiced) implementada
     \n Hem implementat una heurística basada en la potència i la periodicitat de la senyal:
-    1. Si la potència (`pot`) és menor a -45 dB, assumim que és soroll de fons o silenci, per tant és sord fem `return true`.
-    2. Si el valor màxim secundari de l'autocorrelació normalitzada (`rmaxnorm`) és menor a 0.43, 
+    -# Si la potència (`pot`) és menor a -45 dB, assumim que és soroll de fons o silenci, per tant és sord fem `return true`.
+    -# Si el valor màxim secundari de l'autocorrelació normalitzada (`rmaxnorm`) és menor a 0.43, 
        significa que no hi ha prou periodicitat a la senyal, per tant la classifiquem com a sorda (`return true`).
-    3. Si supera ambdós llindars, la considerem sonora (`return false`).
-    4. A més, si la potència és bastant baixa (menor a -38 dB) i la periodicitat no és clara (rmaxnorm < 0.55), també la classifiquem com a sorda.
-    Aquests paràmetres -45 dB i 0.43 són empírics i segurament es poden optimitzar encara mes.
+    -# Si supera ambdós llindars, la considerem sonora (`return false`).
+    -# A més, si la potència és bastant baixa (menor a -38 dB) i la periodicitat no és clara (rmaxnorm < 0.55), també la classifiquem com a sorda.
+    Tots aquests paràmetres són empírics i segurament es poden optimitzar encara mes.
     */
     
     if (pot < -45.0f) {
@@ -115,19 +115,19 @@ namespace upc {
 
     /**
     \DONE Cerca del període de pitch (lag de la màxima autocorrelació lluny de l'origen)
-    1. Per evitar detectar el màxim global al lag 0 (energia de la senyal), iniciem 
+    -# Per evitar detectar el màxim global al lag 0 (energia de la senyal), iniciem 
        la recerca de `iRMax` a partir de `npitch_min`, que correspon a la freqüència 
        màxima possible del pitch esperat (500 Hz per la veu humana segons la teoria).
-    2. Recorrem l'array d'autocorrelació `r` des de `npitch_min` fins a la fi de l'array 
+    -# Recorrem l'array d'autocorrelació `r` des de `npitch_min` fins a la fi de l'array 
        (que està limitat per `npitch_max`, la freqüència mínima del pitch).
-    3. Actualitzem `iRMax` cada cop que trobem un valor superior a l'actual emmagatzemat.
+    -# Actualitzem `iRMax` cada cop que trobem un valor superior a l'actual emmagatzemat.
     */
 
     // Comencem a buscar des de npitch_min
     iRMax = r.begin() + npitch_min; 
     
     // Recorrem el vector des de npitch_min fins el final (npitch_max)
-    for (vector<float>::const_iterator it = r.begin() + npitch_min; it != r.end(); ++it) {
+    for (vector<float>::const_iterator it = r.begin() + npitch_min; it != r.end(); it++) {
       if (*it > *iRMax) {
         iRMax = it; 
       }
