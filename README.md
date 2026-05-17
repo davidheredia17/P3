@@ -44,7 +44,7 @@ Ambos umbrales han sido codificados en el método `PitchAnalyzer::unvoiced()`.
 ### 1.3. Evaluación Base y Comparativa
 
 
-En la gráfica que se ve abajo (`comparacionwavesurfer.png`), sin tener en cuenta que está descuadrada (no sabíamos cómo ponerlas para que se vieran igual de tamaño que el wav), se puede apreciar que nuestro `prueva.f0` es bastante similar a `f0ref`, por lo que a simple vista podríamos decir que la estimación es buena. Lo único que vemos es que al principio, como la señal comienza con una especie de potencia negativa, por el valor de nuestros parámetros se ve un pico al principio que hemos intentado arreglar, pero modificando los valores la estimación total daba peores resultados.
+En la gráfica que se ve abajo (`comparacionwavesurfer.png`), sin tener en cuenta que está descuadrada, se puede apreciar que nuestro `prueva.f0` es bastante similar a `f0ref`, por lo que a simple vista podríamos decir que la estimación es buena. Lo único que vemos es que al principio, como la señal comienza con una especie de potencia negativa, por el valor de nuestros parámetros se ve un pico al principio que hemos intentado arreglar.
 
 ![Comparacion Wav/f0ref/f0](comparacionwavesurfer.png)
 
