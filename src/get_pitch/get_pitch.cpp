@@ -27,14 +27,14 @@ Usage:
     get_pitch --version
 
 Options:
-    -h, --help       Show this screen
-    --version        Show the version of the project
     --window W       Window type: rect, hamming [default: rect]
     --min-f0 MIN     Minimum F0 in Hz [default: 50.0]
     --max-f0 MAX     Maximum F0 in Hz [default: 500.0]
     --clip TH        Center-clipping threshold fraction (0.0 to 1.0) [default: 0.0]
     --median N       Median filter window size (odd number, 0 to disable) [default: 0]
-
+    -h, --help       Show this screen
+    --version        Show the version of the project
+    
 Arguments:
     input-wav   Wave file with the audio signal
     output-txt  Output file: ASCII file with the result of the estimation:
