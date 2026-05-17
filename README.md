@@ -94,6 +94,7 @@ PARAMS="--window rect --clip 0.0005 --median 3 --min-f0 50 --max-f0 500"
 ```
 
 #### Sumary
+```bash
 Num. frames:    11200 = 7045 unvoiced + 4155 voiced
 Unvoiced frames as voiced:      195/7045 (2.77 %)
 Voiced frames as unvoiced:      520/4155 (12.52 %)
@@ -101,3 +102,4 @@ Gross voiced errors (+20.00 %): 40/3635 (1.10 %)
 MSE of fine errors:     2.42 %
 
 ===>    TOTAL:  90.57 %
+```
