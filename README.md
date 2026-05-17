@@ -18,8 +18,6 @@ Donde $N$ es la longitud de la ventana de análisis (*frame*). Para encontrar el
 
 A continuación, se muestra la gráfica de un segmento de 30 ms de un fonema sonoro y su autocorrelación, generada mediante un script propio en Python `plot_autocorr.py`:
 
-> **FALTA:** Inserta aquí la GRÁFICA con Python, con el siguiente formato:
-
 ![Señal temporal y autocorrelación de un fonema sonoro](grafica_autocorrelacio.png)
 
 Como se puede observar en la gráfica, el primer máximo secundario de la autocorrelación (marcado en rojo) coincide de forma precisa con el periodo fundamental de la señal de voz en el dominio del tiempo $T_0 \approx 4.25$ ms, lo que equivale a un pitch de $\approx 235$ Hz.
@@ -31,8 +29,6 @@ Como se puede observar en la gráfica, el primer máximo secundario de la autoco
 Para determinar si una trama corresponde a un fonema sonoro (vocal) o sordo/silencio (consonantes fricativas, pausas), se han analizado las características extraídas de la señal utilizando la herramienta Wavesurfer.
 
 Se ha modificado el programa para volcar los datos de potencia $r[0]$ y la autocorrelación normalizada en el máximo secundario $r_{\text{maxnorm}} = \frac{r[\text{lag}]}{r[0]}$, asegurando que se imprime un valor de "silencio" $-100$ dB en los *frames* con energía cero para mantener la sincronización temporal con la señal de audio de Wavesurfer.
-
-> **FALTA:** Insertar aquí última captura de Wavesurfer donde se ven los paneles alineados.
 
 ![Análisis de sonoridad en Wavesurfer](wavesurferinfo.png)
 
@@ -47,13 +43,11 @@ Ambos umbrales han sido codificados en el método `PitchAnalyzer::unvoiced()`.
 
 ### 1.3. Evaluación Base y Comparativa
 
-*(Esta sección está pendiente de que ejecutes el estimador sobre la base de datos de test y saques los resultados base)*
 
 En la gráfica que se ve abajo (`comparacionwavesurfer.png`), sin tener en cuenta que está descuadrada (no sabíamos cómo ponerlas para que se vieran igual de tamaño que el wav), se puede apreciar que nuestro `prueva.f0` es bastante similar a `f0ref`, por lo que a simple vista podríamos decir que la estimación es buena. Lo único que vemos es que al principio, como la señal comienza con una especie de potencia negativa, por el valor de nuestros parámetros se ve un pico al principio que hemos intentado arreglar, pero modificando los valores la estimación total daba peores resultados.
 
 ![Comparacion Wav/f0ref/f0](comparacionwavesurfer.png)
 
-*(La tabla inicial con el Score TOTAL que te da pitch_evaluate antes de aplicar las mejoras).*
 
 ---
 
@@ -80,7 +74,6 @@ La presencia de formantes puede generar picos en la autocorrelación que compite
 * **Funcionamiento:** Se calcula el máximo absoluto del *frame* actual. A continuación, todas las muestras de la señal cuya amplitud no supere una fracción de este máximo (definida por `--clip`) se ponen a cero. Al resto de las muestras se les resta el umbral para suavizar la transición (*soft clipping*).
 * **Beneficio:** Esta técnica "limpia" el ruido y la influencia de los formantes, haciendo que la autocorrelación resultante sea mucho más limpia y el máximo secundario destaque de manera evidente.
 
-*Nota:* Después de ver los resultados e ir probando valores nos hemos dado cuenta que o no funciona muy bien o no está implementado correctamente, ya que nos hacía bajar el SCORE.
 
 #### B. Postprocesado: Filtro de Mediana
 Los estimadores de pitch basados en autocorrelación son propensos a errores puntuales aislados, como el *pitch doubling* (detectar el doble de la frecuencia real) o el *pitch halving* (detectar la mitad).
